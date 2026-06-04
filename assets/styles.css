@@ -32,7 +32,6 @@ header {
 .headerleft {
     	display: flex;
     	align-items: center;
-		gap: 10px;
 }
 .headerright {
     	display: flex;
