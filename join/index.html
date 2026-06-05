@@ -89,6 +89,9 @@ async function getSubscriberCount() {
     console.error(error);
   }
 }
+getSubscriberCount();
+setInterval(getSubscriberCount, 4800000);
+
 </script>
 
 
