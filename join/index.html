@@ -61,8 +61,8 @@ const UPLOADS_PLAYLIST = "UU2-aS5D7OjnOJENooqdDw3Q";
 
 async function getSubscriberCount() {
   const url =
-    `https://www.googleapis.com/youtube/v3/channels` +
-    `?part=statistics&id=${CHANNEL_ID}&key=${API_KEY}`;
+    `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=` +
+    `${CHANNEL_ID}&key=${API_KEY}`;
 
   try {
     const response = await fetch(url);
