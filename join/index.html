@@ -51,18 +51,17 @@
 			<a href="https://youtube.com/@HJB1701" style="font-size: 50px;"><span class="fa fa-youtube">‍</span></a> <br><br> <br>
 			<a class="buttona" href="https://www.youtube.com/@HJB1701?sub_confirmation=1">Subscribe!</a>
 		</div>
-	<script>
+<script>
 /* ---------------- CONFIG ---------------- */
 const API_KEY = "AIzaSyAhBMTIqvgYXaFe7ADYpBFzxPkEeJ1tVps";
 const CHANNEL_ID = "UC2-aS5D7OjnOJENooqdDw3Q";
-const UPLOADS_PLAYLIST = "UU2-aS5D7OjnOJENooqdDw3Q";
 
 /* ---------------- SUBSCRIBER COUNT ---------------- */
 
 async function getSubscriberCount() {
   const url =
-    `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=` +
-    `${CHANNEL_ID}&key=${API_KEY}`;
+    `https://www.googleapis.com/youtube/v3/channels` +
+    `?part=statistics&id=${CHANNEL_ID}&key=${API_KEY}`;
 
   try {
     const response = await fetch(url);
@@ -70,16 +69,23 @@ async function getSubscriberCount() {
 
     if (data.items && data.items.length > 0) {
       const subs = data.items[0].statistics.subscriberCount;
+
+      // Update the visible subscriber count
       document.getElementById("subCount").textContent =
         Number(subs).toLocaleString();
 
-      // ---- MILESTONE PROGRESS BAR ----
-      const goal = 500;
-      const percent = Math.min((subs / goal) * 100, 100);
+      // ---- SAFE MILESTONE CHECK (join page has no milestone bar) ----
+      const fill = document.getElementById("progressFill");
+      const text = document.getElementById("milestoneText");
 
-      document.getElementById("progressFill").style.width = percent + "%";
-      document.getElementById("milestoneText").textContent =
-        `${Number(subs).toLocaleString()} / ${goal.toLocaleString()}`;
+      if (fill && text) {
+        const goal = 500;
+        const percent = Math.min((subs / goal) * 100, 100);
+        fill.style.width = percent + "%";
+        text.textContent =
+          `${Number(subs).toLocaleString()} / ${goal.toLocaleString()}`;
+      }
+
     } else {
       document.getElementById("subCount").textContent = "N/A";
     }
@@ -89,10 +95,12 @@ async function getSubscriberCount() {
     console.error(error);
   }
 }
+
+// Run it
 getSubscriberCount();
 setInterval(getSubscriberCount, 4800000);
-
 </script>
+
 
 
 	</body>
