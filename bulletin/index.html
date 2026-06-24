@@ -1,1 +1,200 @@
+<html lang="en">
+	<head>
+		<link rel="stylesheet" href="./assets/styles.css">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+		<link rel="icon" href="./assets/favi.png">
+		<script src="https://kit.fontawesome.com/a53a2c0cc8.js" crossorigin="anonymous"></script>
+		<title>HJB1701</title>
+	</head>
+  <body>
+    <span class="headercont">
+			<header>
+			<span class="headerleft">
+				<a href="/"><img src="./assets/hjblogo.png" alt="HJB1701 Logo"></a>
+				<span>HJB1701</span>
+				<span style="padding-left: 3vw;"><a href="/join/">Join</a></span>
+			</span>
+			<div class="headerright">
+    				<div class="subinfo-label">Subscribers:</div>
+    				<div id="subCount">Loading...</div>
+			</div>
+			</header>
+		</span>
+    <div class="content">
+			<h2>Bulletin</h2>
+			<hr> <div id="bulletin-container">
+    			<p>Loading bulletin board...</p>
+			</div>
+    </div>
+    <script>
+/* ---------------- CONFIG ---------------- */
+const API_KEY = "AIzaSyAhBMTIqvgYXaFe7ADYpBFzxPkEeJ1tVps";
+const CHANNEL_ID = "UC2-aS5D7OjnOJENooqdDw3Q";
+const UPLOADS_PLAYLIST = "UU2-aS5D7OjnOJENooqdDw3Q";
+
+/* ---------------- SUBSCRIBER COUNT ---------------- */
+
+async function getSubscriberCount() {
+  const url =
+    `https://www.googleapis.com/youtube/v3/channels` +
+    `?part=statistics&id=${CHANNEL_ID}&key=${API_KEY}`;
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.items && data.items.length > 0) {
+      const subs = data.items[0].statistics.subscriberCount;
+      document.getElementById("subCount").textContent =
+        Number(subs).toLocaleString();
+
+      /* ---- MILESTONE PROGRESS BAR ---- */
+      const goal = 500; // your chosen milestone
+      const percent = Math.min((subs / goal) * 100, 100);
+
+      document.getElementById("progressFill").style.width = percent + "%";
+      document.getElementById("milestoneText").textContent =
+        `${Number(subs).toLocaleString()} / ${goal.toLocaleString()}`;
+
+    } else {
+      document.getElementById("subCount").textContent = "N/A";
+    }
+  } catch (error) {
+    document.getElementById("subCount").textContent = "Error";
+    console.error(error);
+  }
+}
+
+getSubscriberCount();
+setInterval(getSubscriberCount, 4800000);
+
+
+/* ---------------- LATEST SHORT FETCH ---------------- */
+
+async function getLatestShort() {
+  try {
+    const playlistUrl =
+      `https://www.googleapis.com/youtube/v3/playlistItems` +
+      `?part=contentDetails` +
+      `&playlistId=${UPLOADS_PLAYLIST}` +
+      `&maxResults=10` +
+      `&key=${API_KEY}`;
+
+    const playlistRes = await fetch(playlistUrl);
+    const playlistData = await playlistRes.json();
+
+    if (!playlistData.items) return null;
+
+    const videoIds = playlistData.items.map(i => i.contentDetails.videoId);
+
+    const videoUrl =
+      `https://www.googleapis.com/youtube/v3/videos` +
+      `?part=contentDetails,snippet` +
+      `&id=${videoIds.join(",")}` +
+      `&key=${API_KEY}`;
+
+    const videoRes = await fetch(videoUrl);
+    const videoData = await videoRes.json();
+
+    if (!videoData.items) return null;
+
+    for (const video of videoData.items) {
+      const details = video.contentDetails;
+      const snippet = video.snippet;
+
+      const match = details.duration.match(/PT(?:(\d+)M)?(?:(\d+)S)?/);
+      const minutes = match?.[1] ? parseInt(match[1]) : 0;
+      const seconds = match?.[2] ? parseInt(match[2]) : 0;
+      const totalSeconds = minutes * 60 + seconds;
+
+      const thumb = snippet.thumbnails.default;
+      if (totalSeconds <= 180) {
+        return video.id;
+      }
+    }
+
+    return null;
+
+  } catch (err) {
+    console.error("Error fetching latest short:", err);
+    return null;
+  }
+}
+
+/* ---------------- YOUTUBE IFRAME API ---------------- */
+
+// Load the IFrame API
+var tag = document.createElement('script');
+tag.src = "https://www.youtube.com/iframe_api";
+document.body.appendChild(tag);
+
+let player = null;
+
+// Called automatically when the API is ready
+function onYouTubeIframeAPIReady() {
+  getLatestShort().then(videoId => {
+    if (!videoId) {
+      console.error("No short found.");
+      return;
+    }
+
+    player = new YT.Player('latestshort', {
+      height: '480',
+      width: '270',
+      videoId: videoId,
+      playerVars: { playsinline: 1 }
+    });
+  });
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<script>
+// 2. Paste your literal Worker URL here (Make sure there is no trailing slash at the end)
+const WORKER_URL = "https://hjbkv.aunitt16.workers.dev";
+
+// --- PART A: AUTO-LOAD THE BULLETIN ON VISIT ---
+window.addEventListener('DOMContentLoaded', () => {
+    fetch(`${WORKER_URL}/api/get-bulletin`)
+        .then(response => {
+            if (!response.ok) throw new Error("Database file empty or worker offline.");
+            return response.text();
+        })
+        .then(markdownText => {
+            // Converts the markdown into clean HTML and drops it into your container element
+            document.getElementById('bulletin-container').innerHTML = marked.parse(markdownText);
+        })
+        .catch(err => {
+            console.error(err);
+            document.getElementById('bulletin-container').innerText = "Welcome to the bulletin board! (Click the secret trigger to leave your first note).";
+        });
+});
+
+// --- PART B: THE SECRET TRIGGER CLICK ---
+document.getElementById('secret-trigger').addEventListener('click', async () => {
+    const password = prompt("Enter the secret password:");
+    if (!password) return;
+
+    const newMessage = prompt("Enter the new bulletin board message (Markdown format):");
+    if (!newMessage) return;
+
+    const response = await fetch(`${WORKER_URL}/api/update-bulletin`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password, message: newMessage })
+    });
+
+    const result = await response.json();
+    alert(result.message);
+    
+    if (response.ok) { 
+        location.reload(); // Reloads the page so Part A runs again and displays your new text
+    } 
+});
+</script>
+  </body>
 
