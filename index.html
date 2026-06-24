@@ -168,7 +168,28 @@ function onYouTubeIframeAPIReady() {
 }
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
 <script>
+// --- PART A: LOAD AND DISPLAY THE BULLETIN BOARD ---
+// This runs automatically as soon as the page loads
+window.addEventListener('DOMContentLoaded', () => {
+    fetch('/api/get-bulletin')
+        .then(response => {
+            if (!response.ok) throw new Error("Could not fetch bulletin");
+            return response.text();
+        })
+        .then(markdownText => {
+            // Converts the markdown string into HTML and injects it into your page
+            document.getElementById('bulletin-container').innerHTML = marked.parse(markdownText);
+        })
+        .catch(err => {
+            console.error(err);
+            document.getElementById('bulletin-container').innerText = "Failed to load bulletin board.";
+        });
+});
+
+// --- PART B: THE SECRET EDIT BUTTON (Your Original Script) ---
 document.getElementById('secret-trigger').addEventListener('click', async () => {
     const password = prompt("Enter the secret password:");
     if (!password) return;
@@ -176,7 +197,7 @@ document.getElementById('secret-trigger').addEventListener('click', async () => 
     const newMessage = prompt("Enter the new bulletin board message (Markdown format):");
     if (!newMessage) return;
 
-    // Send the data to your backend server
+    // This hits your Cloudflare Pages Function at functions/api/update-bulletin.js
     const response = await fetch('/api/update-bulletin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -185,7 +206,10 @@ document.getElementById('secret-trigger').addEventListener('click', async () => 
 
     const result = await response.json();
     alert(result.message);
-    if(response.ok) { location.reload(); } // Refresh to see changes
+    
+    if (response.ok) { 
+        location.reload(); // Refresh the page to trigger PART A and show the new message
+    } 
 });
 </script>
 
