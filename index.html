@@ -45,6 +45,7 @@
 			<a href="https://youtube.com/@HJB1701" style="font-size: 50px;"><span class="fa fa-youtube">‍</span></a> <br><br> <br>
 			<a class="buttona" href="https://www.youtube.com/@HJB1701?sub_confirmation=1">Subscribe!</a>
 		</div>
+		<span id="secret-trigger" style="font-size: 5px;">Admin Login</span>
 	<script>
 /* ---------------- CONFIG ---------------- */
 const API_KEY = "AIzaSyAhBMTIqvgYXaFe7ADYpBFzxPkEeJ1tVps";
@@ -167,6 +168,26 @@ function onYouTubeIframeAPIReady() {
 }
 </script>
 
+<script>
+document.getElementById('secret-trigger').addEventListener('click', async () => {
+    const password = prompt("Enter the secret password:");
+    if (!password) return;
+
+    const newMessage = prompt("Enter the new bulletin board message (Markdown format):");
+    if (!newMessage) return;
+
+    // Send the data to your backend server
+    const response = await fetch('/api/update-bulletin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password, message: newMessage })
+    });
+
+    const result = await response.json();
+    alert(result.message);
+    if(response.ok) { location.reload(); } // Refresh to see changes
+});
+</script>
 
 	</body>
 </html>
