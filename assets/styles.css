@@ -56,6 +56,20 @@ header a {
 .headercont {
 	display: block;
 }
+#bulletin-container {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+    max-width: 800px;
+}
+
+/* This ensures any markdown headers or lists look right inside the container */
+#bulletin-container h1 {
+    margin-top: 0;
+    color: #333;
+}
 .content {
 	text-align: center;
 }
