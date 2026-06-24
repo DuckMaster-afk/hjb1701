@@ -64,6 +64,10 @@ header a {
     padding: 20px;
 }
 
+#bulletin-container > *:first-child {
+    margin-top: 0 !important;
+}
+
 /* This ensures any markdown headers or lists look right inside the container */
 #bulletin-container h1 {
     margin-top: 0;
