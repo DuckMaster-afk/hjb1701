@@ -19,7 +19,9 @@ body {
 	padding: 0;
 	border: 0;
 	font-family:Roboto Condensed;
-	background-color: rgba(198, 34, 22, 0.8);
+	background-image: url('./images/redconc.jpg');
+	background-size: 160px 160px;
+	background-repeat: repeat;
 	padding-bottom: 60px;
 }
 header {
