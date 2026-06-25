@@ -131,6 +131,7 @@ header a {
     width: 80%;
     margin: 20px auto;
     text-align: center;
+	margin-bottom: 0px;
 }
 
 .milestone-label {
@@ -169,6 +170,6 @@ header a {
 }
 #hanging {
 	padding-left: 180px;
-	max-width: 45px;
-	padding-bottom: 50px;
+	max-width: 65px;
+	padding-bottom: 75px;
 }
