@@ -157,7 +157,7 @@ header a {
     margin: 0 auto;
     text-align: center;
 }
-#textbg {
+.textbg {
 	max-width: 800px;
 	overflow: hidden;
     margin: 0 auto;
