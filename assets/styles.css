@@ -97,6 +97,7 @@ header a {
     pointer-events: auto;
 }
 .buttona {
+	display: inline-block;
 	border-radius: 35px;
 	background-color: #59c5f4;
 	padding-top: 35px;
