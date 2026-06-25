@@ -180,50 +180,5 @@ function onYouTubeIframeAPIReady() {
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
-<script>
-// 2. Paste your literal Worker URL here (Make sure there is no trailing slash at the end)
-const WORKER_URL = "https://hjbkv.aunitt16.workers.dev";
-
-// --- PART A: AUTO-LOAD THE BULLETIN ON VISIT ---
-window.addEventListener('DOMContentLoaded', () => {
-    fetch(`${WORKER_URL}/api/get-bulletin`)
-        .then(response => {
-            if (!response.ok) throw new Error("Database file empty or worker offline.");
-            return response.text();
-        })
-        .then(markdownText => {
-            // Converts the markdown into clean HTML and drops it into your container element
-            document.getElementById('bulletin-container').innerHTML = marked.parse(markdownText);
-        })
-        .catch(err => {
-            console.error(err);
-            document.getElementById('bulletin-container').innerText = "Welcome to the bulletin board! (Click the secret trigger to leave your first note).";
-        });
-});
-
-// --- PART B: THE SECRET TRIGGER CLICK ---
-document.getElementById('secret-trigger').addEventListener('click', async () => {
-    const password = prompt("Enter the secret password:");
-    if (!password) return;
-
-    const newMessage = prompt("Enter the new bulletin board message (Markdown format):");
-    if (!newMessage) return;
-
-    const response = await fetch(`${WORKER_URL}/api/update-bulletin`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password, message: newMessage })
-    });
-
-    const result = await response.json();
-    alert(result.message);
-    
-    if (response.ok) { 
-        location.reload(); // Reloads the page so Part A runs again and displays your new text
-    } 
-});
-</script>
-
 	</body>
 </html>

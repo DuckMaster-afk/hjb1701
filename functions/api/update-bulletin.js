@@ -5,7 +5,7 @@ export async function onRequestPost(context) {
 
     // Define standard CORS headers
     const corsHeaders = {
-      "Access-Control-Allow-Origin": "*", // Or change "*" to your specific frontend domain
+      "Access-Control-Allow-Origin": "site.hjb1701.workers.dev",
       "Access-Control-Allow-Methods": "POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
       "Content-Type": "application/json"
