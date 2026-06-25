@@ -169,4 +169,6 @@ header a {
 }
 #hanging {
 	padding-left: 30px;
+	max-width: 15px;
+	padding-bottom: 20px;
 }
