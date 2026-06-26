@@ -183,3 +183,9 @@ header a {
 #topmargin {
 	margin-top: 40px;
 }
+.subbutton-cont {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+}
